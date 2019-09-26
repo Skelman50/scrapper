@@ -1,18 +1,15 @@
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
+const mongoose = require("mongoose");
+const { Jobs } = require("./models/jobs-scrapper");
 
-const scrapingTesult = [
-  {
-    title: "Senior Back-End Services Engineer - Remote ",
-    datePost: new Date("2019-09-25 21:12:12"),
-    neighborhood: "(palo alto)",
-    url:
-      "https://sfbay.craigslist.org/sfc/sof/d/san-francisco-senior-back-end-services/6985787324.html",
-    jobDescription:
-      "Mode is a powerful, collaborative analytics platform designed by, and for, analysts. Armed with tightly integrated SQL, Python, R, and...",
-    compensation: "DOE"
-  }
-];
+const connectToMD = async () => {
+  await mongoose.connect("mongodb://localhost:27017/job-scrapper", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
+  console.log("connect to mongo");
+};
 
 const hoodReplaceTrim = string =>
   string
@@ -50,17 +47,21 @@ const scrapJobDescription = async (listings, page) => {
     const html = await page.content();
     const $ = cheerio.load(html);
     const postDescription = $("#postingbody").text();
+    const compensation = $("p.attrgroup > span:nth-child(1) > b").text();
     listings[i].jobDescription = postDescription;
-    console.log(listings[i].jobDescription);
+    listings[i].compensation = compensation;
+    const jobs = new Jobs(listings[i]);
+    await jobs.save();
     await sleep(1000);
   }
 };
 
 const main = async () => {
+  await connectToMD();
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   const listings = await scraperListings(page);
-  const listingsWithJobDescription = await scrapJobDescription(listings, page);
+  await scrapJobDescription(listings, page);
 };
 
 main();

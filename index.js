@@ -45,7 +45,6 @@ const scraperListings = async page => {
 };
 
 const scrapJobDescription = async (listings, page) => {
-  console.log(listings);
   for (let i = 0; i < listings.length; i++) {
     await page.goto(listings[i].url);
     const html = await page.content();

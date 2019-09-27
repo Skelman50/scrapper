@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 const mongoose = require("mongoose");
-const { Jobs } = require("./models/jobs-scrapper-with-puppeteer");
+const { Jobs } = require("../models/jobs-scrapper-model");
 
 const connectToMD = async () => {
   await mongoose.connect("mongodb://localhost:27017/job-scrapper", {

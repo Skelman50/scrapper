@@ -1,5 +1,13 @@
 const cheerio = require("cheerio");
-const request = require("request-promise");
+const tunnel = require("tunnel");
+const request = require("request-promise").defaults({
+  agent: tunnel.httpsOverHttp({
+    proxy: {
+      host: "43.241.135.177",
+      port: 8080
+    }
+  })
+});
 
 const url = "https://sfbay.craigslist.org/search/sof";
 const resultScrap = [];
@@ -49,8 +57,9 @@ const scrapDescription = async jobHeaders => {
 
 const scrapBody = async () => {
   const jobHeaders = await scrapperJobHeader();
-  const jobsFull = await scrapDescription(jobHeaders);
-  console.log(jobsFull);
+  console.log(jobHeaders);
+  // const jobsFull = await scrapDescription(jobHeaders);
+  // console.log(jobsFull);
 };
 
 scrapBody();

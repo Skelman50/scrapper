@@ -1,4 +1,4 @@
-const request = require("request-promise");
+const request = require("requestretry");
 const cheerio = require("cheerio");
 
 const scrapTitleAndRatings = async () => {
@@ -24,13 +24,15 @@ const scrapTitleAndRatings = async () => {
   return movies.filter(m => m.title);
 };
 
+const getPostUrl = async movie => {
+  const html = await request.get(movie.urlDescription);
+  const $ = await cheerio.load(html);
+  movie.posterUrl = $("div.poster > a").attr("href");
+  return movie;
+};
+
 const scrapPosterUrl = async movies => {
-  const promisemovies = movies.map(async movie => {
-    const html = await request.get(movie.urlDescription);
-    const $ = await cheerio.load(html);
-    movie.posterUrl = $("div.poster > a").attr("href");
-    return movie;
-  });
+  const promisemovies = movies.map(async movie => getPostUrl(movie));
   const moviesPostersUrl = await Promise.all(promisemovies);
   return moviesPostersUrl;
 };

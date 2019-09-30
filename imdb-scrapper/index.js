@@ -1,4 +1,4 @@
-const request = require("requestretry");
+const request = require("request-promise");
 const cheerio = require("cheerio");
 
 const scrapTitleAndRatings = async () => {

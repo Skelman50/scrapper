@@ -1,0 +1,2 @@
+exports.itemPropUrl = "[itemprop='url']";
+exports.pricePerNightSelector = "#room > div > div > div > div > div > div > div > div > div > div > div > div > div > div > div > div > div > div > div > span > span"
